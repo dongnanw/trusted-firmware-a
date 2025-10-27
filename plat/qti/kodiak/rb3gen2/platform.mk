@@ -103,11 +103,13 @@ $(warning QTISECLIB_PATH is not provided while building, using stub implementati
 		Please refer to documentation for more details \
 		THIS FIRMWARE WILL NOT BOOT!)
 BL31_SOURCES	+=	plat/qti/qtiseclib/src/qtiseclib_interface_stub.c \
-			drivers/qti/sec_core/sec_core.c
+			drivers/qti/sec_core/sec_core.c \
+			drivers/qti/qtimer/qtimer.c
 else
 $(eval $(call add_define,QTISECLIB_PATH))
 # use library provided by QTISECLIB_PATH
-BL31_SOURCES	+=			drivers/qti/sec_core/sec_core_stub.c
+BL31_SOURCES	+=			drivers/qti/sec_core/sec_core_stub.c \
+					drivers/qti/qtimer/qtimer_stub.c
 LDFLAGS += -L $(dir $(QTISECLIB_PATH))
 LDLIBS += -l$(patsubst lib%.a,%,$(notdir $(QTISECLIB_PATH)))
 endif
