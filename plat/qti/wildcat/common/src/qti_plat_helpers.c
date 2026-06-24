@@ -12,6 +12,8 @@
 #include <lib/mmio.h>
 #include <assert.h>
 
+#include <bl31qtilib_spd_agnostic.h>
+
 /*
  * Function : find_cluster_id
  * This function provides the cluster id to which the core belongs
@@ -29,6 +31,12 @@ unsigned int find_cluster_id(void)
 	return cluster_id;
 }
 
+void plat_error_handler(int error)
+{
+	bl31qtilib_spd_plat_error_handler(error);
+	panic();
+}
+
 /*
  * Function : find_cluster_id_by_mpidr
  * This function provides the cluster id to which the provided
@@ -44,4 +52,3 @@ unsigned int find_cluster_id_by_mpidr(u_register_t mpidr)
 	cluster_id = (mpidr >> MPIDR_AFF2_SHIFT) & MPIDR_AFFLVL_MASK;
 	return cluster_id;
 }
-

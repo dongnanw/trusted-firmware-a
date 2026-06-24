@@ -37,6 +37,7 @@
 #include <platform_def.h>
 #include <arch_helpers.h>
 #include "tfa_bl31_shared_imem.h"
+#include <bl31qtilib_spd_agnostic.h>
 
 /* Ringbuf definition */
 /* For platform with TZ imem */
@@ -274,6 +275,18 @@ void bl31_early_platform_setup(u_register_t from_bl2,
 	bl31_params_parse_helper(from_bl2, &bl32_image_ep_info,
 				 &bl33_image_ep_info);
 
+	if (bl32_image_ep_info.args.arg0 != 0)
+	{
+		sbl_qsee_interface = (boot_qsee_interface *)
+			bl31qtilib_spd_share_object(
+				BOOT_QSEE_INTERFACE,
+				(void *)bl32_image_ep_info.args.arg0,
+				sizeof(boot_qsee_interface)
+			);
+		if (sbl_qsee_interface != NULL) {
+			bl32_image_ep_info.args.arg0 = (uintptr_t)sbl_qsee_interface;
+		}
+	}
 
 }
 
