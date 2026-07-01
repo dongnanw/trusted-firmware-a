@@ -370,7 +370,9 @@ void psci_update_req_local_pwr_states(unsigned int end_pwrlvl,
 
 	for (lvl = PSCI_CPU_PWR_LVL + 1U; lvl <= max_pwrlvl; lvl++) {
 		/* Save the previous requested local power state */
-		prev[lvl - 1U] = *psci_get_req_local_pwr_states(lvl, cpu_idx);
+		plat_local_state_t *req_local_pwr_states = psci_get_req_local_pwr_states(lvl, cpu_idx);
+		assert(req_local_pwr_states != NULL);
+		prev[lvl - 1U] = *req_local_pwr_states;
 
 		/* Update the new requested local power state */
 		if (lvl <= end_pwrlvl) {
@@ -595,6 +597,8 @@ void psci_do_state_coordination(unsigned int cpu_idx, unsigned int end_pwrlvl,
 		plat_local_state_t const *req_states = psci_get_req_local_pwr_states(lvl,
 										start_idx);
 
+		assert(req_states != NULL);
+
 		/*
 		 * Let the platform coordinate amongst the requested states at
 		 * this power level and return the target local power state.
@@ -672,6 +676,11 @@ int psci_validate_state_coordination(unsigned int cpu_idx, unsigned int end_pwrl
 		/* Get the requested power states for this power level */
 		start_idx = psci_non_cpu_pd_nodes[parent_idx].cpu_start_idx;
 		req_states = psci_get_req_local_pwr_states(lvl, start_idx);
+
+		if(req_states == NULL){
+			rc = PSCI_E_INTERN_FAIL;
+			goto exit;
+		}
 
 		/*
 		 * Let the platform coordinate amongst the requested states at
